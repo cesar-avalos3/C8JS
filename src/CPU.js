@@ -20,6 +20,8 @@ var PC = new Uint16Array(1);
 var Registers = new Uint8Array(16);
 //16 Registers are initialized
 
+var I = new Uint16Array(1);
+
 function instructions(currentData)
 {
 	var startBit = currentData.charAt(0);
@@ -132,7 +134,7 @@ function instructions(currentData)
 			}
 			Registers[parseInt("0x"+currentData.substr(1))] = sum;				
 		}
-		else if(lasBit == 5)
+		else if(lastBit == 5)
 		{
 			//8xy5
 			//If Vx > Vy, VF is 1, else 0. Vy is subtracted from Vx
@@ -146,5 +148,49 @@ function instructions(currentData)
 			}
 			Registers[parseInt("0x"+currentData.substr(1))] = Registers[parseInt("0x"+currentData.substr(1))] + Registers[parseInt("0x"+currentData.substr(2))];
 		}
+		else if(lastBit == 6)
+		{
+			//Something about least sig 
+		}
+		else if(lastBit == 7)
+		{
+			if(Registers[parseInt("0x"+currentData.substr(1))] < Registers[parseInt("0x"+currentData.substr2)])
+			{
+				Registers[0x0F] = 1;
+			}
+			Registers[parseInt("0x"+currentData.substr(1))] -= Registers[parseInt("0x"+currentData.substr2)]);
+		}
+		else if(lastBit == 0x0E)
+		{
+			//Most significant digit of Vx something something something
+		}
 	}
+	else if(startBit == 9)
+	{
+			if(Registers[parseInt("0x"+currentData.substr(1))] != Registers[parseInt("0x"+currentData.substr2)])
+			{
+				PC[0] += 2;
+			}
+	}
+	else if(startBit == 0x0A)
+	{
+		//Set the I register to nnn
+		I[0] = parseInt("0x"+currentData.substr(1,3));
+	}
+	else if(startBit == 0x0B)
+	{
+		//Jump to memory location nnn
+		PC[0] = parseInt("0x"+currentData.substr(1,3));
+	}
+	else if(startBit == 0x0C)
+	{
+		//Generates a random number which is then ANDed with kk, the result stored in Vx 
+		var random = Math.floor(Math.random() * 255);
+		Registers[parseInt("0x"+currentData.substr(1))] = random & parseInt("0x"+currentData.substr(2,3));
+	}
+	else if(startBit == 0x0D)
+	{
+		//Display Graphics
+	}
+	else if(startBit == )
 }
