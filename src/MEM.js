@@ -11,9 +11,23 @@ fileIn.addEventListener('change',function(e)
 		reader.onload = function(e)
 		{
 			//var view = new Int8Array(reader.result);
-			fileOut.innerHTML = reader.result;
-
-
+			fileOut.innerHTML = hexToString(reader);
 		}
-      	reader.readAsText(file[0],'UUID');
+      	reader.readAsBinaryString(file[0]);
 	});
+
+function hexToString(_fileReader)
+{
+	var tempString = "";
+	var counter = 0;
+	for(i = 0; i < _fileReader.result.length; i++)
+	{
+		tempByte =  _fileReader.result.charCodeAt(i).toString(16);
+		if(tempByte.length < 2)
+		{
+			tempByte = "0" + tempByte;
+		}
+		tempString += tempByte;
+	}
+	return tempString;
+}

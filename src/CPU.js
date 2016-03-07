@@ -1,7 +1,5 @@
 //Begin Specifications
 
-//Create a PC that tells the machine where the fuck are we
-
 //Define the instruction sets
 
 //Generate arrays using JS typed arrays
@@ -41,7 +39,7 @@ function instructions(currentData)
 	else if(startBit == 1)
 	{
 		var rest = currentData.substr(1,3);
-		PC[0] = parseInt("0x" + rest);
+		PC[0] = (parseInt("0x" + rest) * 4);
 		//Jump PC to this location in the memory
 	}
 	else if(startBit == 2)
@@ -194,3 +192,5 @@ function instructions(currentData)
 	}
 	else if(startBit == )
 }
+
+function 
