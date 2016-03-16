@@ -15,14 +15,32 @@ var buffer = new ArrayBuffer();
 var PC = new Uint16Array(1);
 //PC tells where the running code is
 
-var Registers = new Uint8Array(16);
 //16 Registers are initialized
+var Registers = new Uint8Array(16);
 
+//I stores memory address
 var I = new Uint16Array(1);
 
+//The stack itself is Stack
+//SP points to the top of the stack
+var Stack = new Uint16Array(16);
+var SP = new Uint16Array(1);
+SP[0] = 0x0; //Initialize SP to 0
+
+
+// Generic function to handle PC chances
+// to prevent issues, when using superCHIP-8
+// the program starts at other address than 0x200
+function changePC(_newAddress)
+{
+	return (_newAdress - 0x200);
+}
+
+//Pass currentData as toString(16), that 
+//is, currentData must be a string like "0x7643"
 function instructions(currentData)
 {
-	var startBit = currentData.charAt(0);
+	var startBit = currentData[0];
 	if(startBit === 0)
 	{
 		var rest = currentData.substr(1,3);
@@ -30,22 +48,26 @@ function instructions(currentData)
 		{
 			case "0E0":
 				console.log("clear screen");
+				clearScreen();
 			break;
 			case "0EE":
-				console.log("return from a subroutine");
+				PC[0] = changePC(Stack[SP[0]]);
+				SP[0]--;
 			break;
 		}
 	}
 	else if(startBit == 1)
 	{
 		var rest = currentData.substr(1,3);
-		PC[0] = (parseInt("0x" + rest) * 4);
+		PC[0] = changePC((parseInt("0x" + rest) * 4));
 		//Jump PC to this location in the memory
 	}
 	else if(startBit == 2)
 	{
-		//Increases the stack by 2
-		//Puts PC on top of the stack
+		//Increse stack pointer
+		//Put PC at the top of the stack.
+		SP[0]++;
+		Stack[SP[0]] = PC[0];
 		var rest = currentData.substr(1,3);
 		PC[0] = parseInt("0x" + rest);
 	}
