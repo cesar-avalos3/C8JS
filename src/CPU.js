@@ -74,19 +74,19 @@ function instructions(currentData)
 	else if(startBit == 3)
 	{
 		//Check the register Vx, see if they are equal
-		//if so, increment PC by 2.
+		//if so, increment PC by 2 (2 for CHIP-8 system is 8 for C8JS).
 		//Should saneate the thing to prevent from things going out of bounds
-		if(Registers[parseInt("0x"+currentData.substr(1))] == parseInt("0x"+currentData.substr(2,3)) )
+		if(Registers[ parseInt("0x"+currentData[1]) ] == parseInt( "0x"+currentData.substr(2,3) ))
 		{
-			PC[0] += 2;
+			PC[0] += 8;
 		}
 	}
 	else if(startBit == 4)
 	{
 		//Same thing as above, except it checks inequality
-		if(Registers[parseInt("0x"+currentData.substr(1))] != parseInt("0x"+currentData.substr(2,3)) )
+		if(Registers[ parseInt("0x"+currentData[1]) ] != parseInt("0x"+currentData.substr(2,3)) )
 			{
-				PC[0] += 2;
+				PC[0] += 8;
 			}	
 	}
 	else if(startBit == 5)
@@ -94,10 +94,10 @@ function instructions(currentData)
 		//5xy0
 		//SE Vx, Vy
 		//Compares Vx to Vy, if they are equal increase PC by 2
-		//It will ignore the 4th value
-		if(Registers[parseInt("0x"+currentData.substr(1))] == Registers[parseInt("0x"+currentData.substr(2)])
+		//It will ignore the 4th value, should be 0, this may cause problems later on.
+		if(Registers[parseInt( "0x"+currentData[1] )] == Registers[ parseInt("0x"+currentData.substr[2]) ]
 		{
-			PC[0] += 2;
+			PC[0] += 8;
 		}
 	}
 	else if(startBit == 6)
@@ -105,41 +105,41 @@ function instructions(currentData)
 		//6xkk
 		//LD Vx, byte
 		//Puts kk into x
-		Registers[parseInt("0x"+currentData.substr(1))] = parseInt("0x"+currentData.substr(2,3));
+		Registers[ parseInt("0x"+currentData[1]) ] = parseInt("0x"+currentData.substr(2,3));
 	}
 	else if(startBit == 7)
 	{
 		//7xkk
 		//ADD Vx, byte
 		//Vx = Vx + kk
-		Registers[parseInt("0x"+currentData.substr(1))] += parseInt("0x"+currentData.substr(2,3));
+		Registers[ parseInt("0x"+currentData[1]) ] += parseInt("0x"+currentData.substr(2,3));
 	}
 	else if(startBit == 8)
 	{
-		var lastBit = currentData.substr(3);
-		if(lastBit == 0)
+		var lastBit = parseInt( currentData[3] );
+		if(lastBit === 0)
 		{
 			//8xy0
 			//Stores the value of Vy onto Vx
-			Registers[parseInt("0x"+currentData.substr(1))] = Registers[parseInt("0x"+currentData.substr(2))];
+			Registers[ parseInt("0x"+currentData[1]) ] = Registers[ parseInt("0x"+currentData[2]) ];
 		}
 		else if(lastBit == 1)
 		{
 			//8xy1
 			//Performs a bitwise OR on the values of Vx and Vy, storing the result in Vx
-			Registers[parseInt("0x"+currentData.substr(1))] = Registers[parseInt("0x"+currentData.substr(1))] | Registers[parseInt("0x"+currentData.substr(2))];	
+			Registers[ parseInt("0x"+currentData[1]) ] = Registers[ parseInt("0x"+currentData[1]) ] | Registers[ parseInt("0x"+currentData[2]) ] ;				
 		}
 		else if(lastBit == 2)
 		{
 			//8xy2
 			//AND
-			Registers[parseInt("0x"+currentData.substr(1))] = Registers[parseInt("0x"+currentData.substr(1))] & Registers[parseInt("0x"+currentData.substr(2))];				
+			Registers[ parseInt("0x"+currentData[1]) ] = Registers[ parseInt("0x"+currentData[1]) ] & Registers[ parseInt("0x"+currentData[2]) ] ;				
 		}
 		else if(lastBit == 3)
 		{
 			//8xy3
 			//XOR
-			Registers[parseInt("0x"+currentData.substr(1))] = Registers[parseInt("0x"+currentData.substr(1))] ^ Registers[parseInt("0x"+currentData.substr(2))];				
+			Registers[ parseInt("0x"+currentData[1]) ] = Registers[ parseInt("0x"+currentData[1]) ] ^ Registers[ parseInt("0x"+currentData[2]) ] ;				
 		}
 		else if(lastBit == 4)
 		{
@@ -174,11 +174,11 @@ function instructions(currentData)
 		}
 		else if(lastBit == 7)
 		{
-			if(Registers[parseInt("0x"+currentData.substr(1))] < Registers[parseInt("0x"+currentData.substr2)])
+			if(Registers[parseInt("0x"+currentData.substr(1))] < Registers[parseInt("0x"+currentData[2])])
 			{
 				Registers[0x0F] = 1;
 			}
-			Registers[parseInt("0x"+currentData.substr(1))] -= Registers[parseInt("0x"+currentData.substr2)]);
+			Registers[parseInt("0x"+currentData.substr(1))] -= Registers[parseInt("0x"+currentData[2])]);
 		}
 		else if(lastBit == 0x0E)
 		{
@@ -187,9 +187,9 @@ function instructions(currentData)
 	}
 	else if(startBit == 9)
 	{
-			if(Registers[parseInt("0x"+currentData.substr(1))] != Registers[parseInt("0x"+currentData.substr2)])
+			if(Registers[parseInt( "0x"+currentData[1] )] != Registers[parseInt( "0x"+currentData[2] )] )
 			{
-				PC[0] += 2;
+				PC[0] += 8;
 			}
 	}
 	else if(startBit == 0x0A)
@@ -200,19 +200,34 @@ function instructions(currentData)
 	else if(startBit == 0x0B)
 	{
 		//Jump to memory location nnn
-		PC[0] = parseInt("0x"+currentData.substr(1,3));
+		PC[0] = parseInt("0x"+currentData.substr(1,3)) + Registers[0];
 	}
 	else if(startBit == 0x0C)
 	{
 		//Generates a random number which is then ANDed with kk, the result stored in Vx 
 		var random = Math.floor(Math.random() * 255);
-		Registers[parseInt("0x"+currentData.substr(1))] = random & parseInt("0x"+currentData.substr(2,3));
+		Registers[ parseInt("0x"+currentData[1]) ] = random & parseInt("0x"+currentData.substr(2,3));
 	}
 	else if(startBit == 0x0D)
 	{
 		//Display Graphics
+		for(i = 0; i < parseInt("0x"+currentData[3]); i++)
+		{
+			//Really inefficient, must rework
+			var tempBufferXOR = imageBuffer[ parseInt("0x"+currentData[1]) + i ][ parseInt("0x"+currentData[2]) + i] ^ I[i];
+			
+			if(tempBufferXOR)
+			{
+				Registers[0x0F] = 0;
+			}
+			else
+			{
+				Registers[0x0F] = 1;
+			}
+			imageBuffer[ parseInt(("0x"+currentData[1]) + i) % 32 ][ parseInt("0x"+currentData[2]) + i] = tempBufferXOR;		
+		}
 	}
-	else if(startBit == )
+	return true; //Just in case, keep moving the thingie
 }
 
 function 
